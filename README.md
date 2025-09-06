@@ -32,6 +32,7 @@ Enhancing data protection in fields like finance, defense, and healthcare.
 Building future quantum-safe cryptographic systems as quantum computers grow.
 
 It’s a small step, but it’s opened my eyes to the power of quantum randomness in security!
+These are the outputs:
 <img width="500" height="500" alt="image" src="https://github.com/user-attachments/assets/844f2e1d-dbee-41c4-99fe-13ebc1fd0613" />
 <img width="500" height="500" alt="image" src="https://github.com/user-attachments/assets/16a17bcd-ca5a-48e1-9907-340fa3137f27" />
 <img width="500" height="500" alt="image" src="https://github.com/user-attachments/assets/fcdbff0b-ee14-4823-81a7-f29e34ee9f53" />
