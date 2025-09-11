@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>User Detection Test</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
+</head>
+<body>
+    <h1>Connected Users:</h1>
+    <ul id="user-list"></ul>
+
+    <script>
+        var socket = io();
+        socket.on('user_list', function(data) {
+            var list = document.getElementById('user-list');
+            list.innerHTML = '';
+            data.users.forEach(function(sid) {
+                var item = document.createElement('li');
+                item.textContent = `User with ID: ${sid}`;
+                list.appendChild(item);
+            });
+        });
+    </script>
+</body>
+</html>
