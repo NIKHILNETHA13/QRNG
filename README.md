@@ -1,5 +1,6 @@
 # QRNG
 This repo is about Quantum Random Number Generator.
+https://quantum-random-number-generator-7.onrender.com/ : Demonstrated Website
 Welcome to my QRNG project, crafted with love and a bit of quantum magic for the Amaravati Quantum Valley Hackathon 2025! 🌌🚀 This repository houses a Quantum Random Number Generator built using Qiskit, designed to produce truly random bits for cryptographic purposes. Let’s dive into the adventure!
 What I Built
 I’ve created a Quantum Random Number Generator (QRNG) using the Qiskit library, a powerful tool for quantum computing. The heart of this project is an 8-qubit quantum circuit where I applied Hadamard gates to throw each qubit into superposition—a state of pure quantum uncertainty. When measured, these qubits collapse into either 0 or 1 with equal probability, generating around 255 unique 8-bit strings. I saved these random treasures in a random_bits.txt file, ready to spark some cryptographic creativity! The process was a thrilling mix of coding, debugging, and marveling at quantum weirdness.
