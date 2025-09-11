@@ -1,24 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>User Detection Test</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
+    <meta charset="UTF-8">
+    <title>Encrypted Chat</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        #chat-container { width: 100%; max-width: 600px; background: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: flex; flex-direction: column; min-height: 500px; }
+        #user-info { padding: 10px; background-color: #e0e6ed; border-top-left-radius: 8px; border-top-right-radius: 8px; text-align: center; }
+        #messages { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .message { padding: 10px 15px; border-radius: 18px; max-width: 75%; word-wrap: break-word; }
+        .sent { background-color: #007bff; color: white; align-self: flex-end; }
+        .received { background-color: #e9e9eb; color: #333; align-self: flex-start; }
+        #input-form { padding: 10px; border-top: 1px solid #ddd; display: flex; gap: 10px; }
+        #message-input { flex-grow: 1; padding: 10px; border-radius: 20px; border: 1px solid #ccc; }
+        #send-button { padding: 10px 20px; border: none; background-color: #007bff; color: white; border-radius: 20px; cursor: pointer; }
+        #send-button:hover { background-color: #0056b3; }
+        #user-select-container { text-align: center; margin-bottom: 20px; }
+    </style>
 </head>
 <body>
-    <h1>Connected Users:</h1>
-    <ul id="user-list"></ul>
+    <div id="chat-container">
+        <div id="user-info">
+            <h2 id="user-id">Connecting...</h2>
+        </div>
+        <div id="messages"></div>
+        <div id="user-select-container">
+            <p>Select a user to chat with:</p>
+            <select id="user-select"></select>
+        </div>
+        <form id="input-form">
+            <input type="text" id="message-input" autocomplete="off" placeholder="Type a message...">
+            <button id="send-button" type="submit">Send</button>
+        </form>
+    </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script>
         var socket = io();
-        socket.on('user_list', function(data) {
-            var list = document.getElementById('user-list');
-            list.innerHTML = '';
-            data.users.forEach(function(sid) {
-                var item = document.createElement('li');
-                item.textContent = `User with ID: ${sid}`;
-                list.appendChild(item);
-            });
+        var myId = null;
+        
+        socket.on('connect', function() {
+            console.log('Connected to server');
         });
+
+        socket.on('user_info', function(data) {
+            myId = data.id;
+            document.getElementById('user-id').innerText = `Your ID: ${myId}`;
+        });
+
+        socket.on('public_keys', function(keys) {
+            var select = document.getElementById('user-select');
+            select.innerHTML = '';
+            var hasOtherUser = false;
+            for (var sid in keys) {
+                if (sid !== socket.id) {
+                    var option = document.createElement('option');
+                    option.value = sid;
+                    option.text = `User ${keys[sid].substring(0, 6)}`;
+                    select.appendChild(option);
+                    hasOtherUser = true;
+                }
+            }
+            if (!hasOtherUser) {
+                var option = document.createElement('option');
+                option.text = "Waiting for another user...";
+                option.disabled = true;
+                option.selected = true;
+                select.appendChild(option);
+            }
+        });
+        
+        document.getElementById('input-form').onsubmit = function(e) {
+            e.preventDefault();
+            var input = document.getElementById('message-input');
+            var message = input.value;
+            if (message) {
+                var receiverSid = document.getElementById('user-select').value;
+                if (receiverSid) {
+                    var data = {
+                        'message': message,
+                        'sender_sid': socket.id,
+                        'receiver_sid': receiverSid
+                    };
+                    socket.emit('message', data);
+                    displayMessage(message, 'sent');
+                    input.value = '';
+                } else {
+                    alert('No other users to send to!');
+                }
+            }
+        };
+
+        socket.on('new_message', function(data) {
+            var message = data.message;
+            displayMessage(message, 'received');
+        });
+
+        function displayMessage(message, type) {
+            var messagesDiv = document.getElementById('messages');
+            var msgElement = document.createElement('div');
+            msgElement.textContent = message;
+            msgElement.className = `message ${type}`;
+            messagesDiv.appendChild(msgElement);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
     </script>
 </body>
 </html>
